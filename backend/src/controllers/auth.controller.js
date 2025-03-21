@@ -102,7 +102,7 @@ export const updateProfile=async(req,res)=>{
     }
 };
 
-export const checkAuth={req,res} => {
+export const checkAuth=(req,res) => {
     try {
         res.status(200).json(req.user);
     } catch (error) {
