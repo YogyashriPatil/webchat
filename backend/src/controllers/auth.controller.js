@@ -58,12 +58,13 @@ export const login=async(req,res) =>
         if(!isPasswordCorrect){
             return res.status(400).json({message:"Invalid credentials "});
         }
-        generateToken(user._id,res);
+        const token=generateToken(user._id,res);
         res.status(200).json({
             _id:user._id,
             fullName:user.fullName,
             email:user.email,
             profilePic:user.profilePic,
+            token,
         });
     }
     catch(error){
@@ -88,12 +89,17 @@ export const updateProfile=async(req,res)=>{
         if(!profilePic){
             return res.status(400).json({message:"Profile pic is required"});
         }
+        console.log("🔵 Received profilePic in backend:", profilePic,{
+            folder:"profile_pics",
+        });
+        console.log("🟢 Cloudinary Upload Response:", uploadResponse);
         const uploadResponse=await cloudinary.uploader.upload(profilePic);
-        const updateUser=await User.findByIdAndUpdate(
+        const updatedUser=await User.findByIdAndUpdate(
             userId,
             {profilePic:uploadResponse.secure_url},
             {new:true}
         );
+        console.log("✅ Updated User:", updatedUser);
         res.status(200).json(updatedUser);
     }
     catch (error) {
