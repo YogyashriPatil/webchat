@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { userAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { MessageSquare, User, Mail, Lock, EyeOff, Eye, Loader } from 'lucide-react'; // ✅ Correct Import
 import {Link} from "react-router-dom";
 // import AuthImagePattern from "../components/AuthImagePattern"; // ✅ Fix
-import { AuthImagePattern } from "../components/AuthImagePattern";
+import AuthImagePattern  from "../components/AuthImagePattern";
 import toast from 'react-hot-toast';
 
 export const SignUpPage = () => {
@@ -13,8 +13,7 @@ export const SignUpPage = () => {
     email: '',
     password: '',
   });
-
-  const { signup, isSingingUp } = userAuthStore();
+  const { signup, isSingingUp } = useAuthStore();
   const validateForm=()=>{
     if(!formData.fullName.trim()) return toast.error("Full name is required");
     if(!formData.email.trim()) return toast.error("Email is required");

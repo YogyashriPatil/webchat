@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {User} from 'lucide-react';
-import { userAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../store/useAuthStore';
 import {Camera, Mail} from "lucide-react";
 import toast from 'react-hot-toast';
 const ProfilePage = () => {
-  const {authUser,isUpdatingProfile,updateProfile}=userAuthStore();
+  const {authUser,isUpdatingProfile,updateProfile,fetchUser}=useAuthStore();
   const [selectedImg,setSelectedImg]=useState(null);
+
+  useEffect(() => {
+    fetchUser();
+  },[fetchUser]);
   const handleImageUpload=async(e)=>
   {
     const file=e.target.files[0];
     if(!file) return;
-
+    
     const reader=new FileReader();
     reader.readAsDataURL(file);
     reader.onload=async()=>{
       const base64Image=reader.result;
-      // setSelectedImg(base64Image);
-      console.log("Uploading image: ",base64Image);
       try {
         await updateProfile({profilePic:base64Image});
         setSelectedImg(base64Image)
@@ -25,7 +27,6 @@ const ProfilePage = () => {
         console.error("Error uploading image:", error);
         toast.error("Error uploading image",error);
       }
-      
     };
   };
   return (
@@ -56,7 +57,7 @@ const ProfilePage = () => {
                 </label>
             </div>
             <p className='text-sm text-zinc-400'>
-              {isUpdatingProfile ? "Uploading... anima":"Click the camera item to update your photo"}
+              {isUpdatingProfile ? "Uploading...":"Click the camera item to update your photo"}
             </p>
           </div>
 

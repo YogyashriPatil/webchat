@@ -1,22 +1,35 @@
-import { Routes ,Route, Navigate} from "react-router-dom";
 import Navbar from "./components/Navbar";
-import {Loader} from 'lucide-react';
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
-import { userAuthStore } from "./store/useAuthStore";
-import { useEffect } from "react";
-import {Toaster} from "react-hot-toast";
+import { Routes ,Route, Navigate} from "react-router-dom";
+import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
+import { useEffect } from "react";
+import {Loader} from 'lucide-react';
+import {Toaster} from "react-hot-toast";
+const isTokenExpired=(token)=>{
+  try{
+      const decoded=JSON.parse(atob(token.split(".")[1]));
+      return decoded.exp*1000<Date.now();
+  }
+  catch(error){
+      return true;
+  }
+};
 
 const App =()=>{
-  const {authUser,checkAuth,isCheckingAuth}=userAuthStore();
-  const {theme}=useThemeStore();
+  const {authUser,checkAuth,isCheckingAuth,onlineUsers,fetchUser}=useAuthStore();
+  const { theme } = useThemeStore();
+  // const {theme}=useThemeStore();
+  console.log({onlineUsers});
+  useThemeStore();
   useEffect(()=>{
-    checkAuth()
-  },[checkAuth]);
+    checkAuth();
+    fetchUser();
+  },[checkAuth,fetchUser]);
   console.log({authUser});
   
   if(isCheckingAuth && !authUser) 
@@ -26,7 +39,7 @@ const App =()=>{
     </div>
   );
   return( 
-  <div data-theme={theme}>
+  <div  data-theme={theme}>
     <Navbar/>
     <Routes>
       <Route path="/" element={authUser?<HomePage />:<Navigate to="/login"/>}/>
