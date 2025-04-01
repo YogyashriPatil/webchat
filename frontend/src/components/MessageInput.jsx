@@ -2,16 +2,46 @@ import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, Smile, X } from "lucide-react";
 import toast from "react-hot-toast";
-import {Picker} from "@emoji-mart/react";
-import data from "@emoji-mart/data";
+import { useEffect } from "react";
 
+const EmojiPicker = ({ onSelect }) => {
+  const emojis = [// Smileys and People
+    "😀", "😂", "😍", "🥳", "👍", "🎉", "🔥", "❤️", "😊", "🤣", "😎", "😜", "😢",
+    "😡", "🤔", "🙌", "🎂", "🌟", "💖", "🚀", "👏", "😇", "😏", "🤩", "💯", "🥰",
+    "🤗", "😴", "😅", "😆", "🤓", "🧐", "🤯", "😰", "😨", "😓", "😤", "😠", "😩",
+    "😭", "🤪", "😵", "🤠", "🥴", "🤡", "👀", "🙈", "🦉"
+  ];
+  return (
+    <div className="absolute bottom-full mb-2 right-0 w-64 bg-gray-200 p-2 rounded-lg shadow-lg grid grid-cols-6 gap-2 max-h-60 overflow-y-auto">
+      {emojis.map((emoji) => (
+        <button key={emoji} className="text-2xl p-1 hover:bg-gray-300 rounded" onClick={() => onSelect(emoji)}>
+          {emoji}
+        </button>
+      ))}
+    </div>
+  );
+};
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
+  const emojiRef=useRef(null);
 
+   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  const handleEmojiSelect = (emoji) => {
+    setText((prev) => prev + emoji);
+    setShowEmojiPicker(false);
+  };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file.type.startsWith("image/")) {
@@ -68,15 +98,7 @@ const MessageInput = () => {
         </div>
       )}
 
-       {/* Emoji Picker */}
-       {showEmojiPicker && (
-        <div className="absolute bottom-16 left-4 shadow-lg z-50">
-          <Picker
-            data={data}
-            onEmojiSelect={(emoji) => setText((prev) => prev + emoji.native)}
-          />
-        </div>
-      )}
+      
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
@@ -102,7 +124,18 @@ const MessageInput = () => {
           >
             <Image size={20} />
           </button>
+          <div className="relative" ref={emojiRef}>
+            <button
+              type="button"
+              className="btn btn-circle flex items-center justify-center text-gray-500"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            >
+            <Smile size={20} />
+          </button>
+          {showEmojiPicker && <EmojiPicker onSelect={handleEmojiSelect} />}
+          </div>
         </div>
+        
         <button
           type="submit"
           className="btn btn-sm btn-circle"
