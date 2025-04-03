@@ -98,7 +98,7 @@ export const updateProfile=async(req,res)=>{
                 transformation:[{width:500,height:500,crop:"limit"}],
             });
         } catch (error) {
-            console.error("❌ Cloudinary Upload Error:", uploadError);
+            console.error("❌ Cloudinary Upload Error:", error);
             return res.status(500).json({ message: "Image upload failed" });
         }
         console.log("🟢 Cloudinary Upload Response:", uploadResponse);
@@ -115,7 +115,7 @@ export const updateProfile=async(req,res)=>{
         res.status(200).json(updatedUser);
     }
     catch (error) {
-        console.log("error in update profile");
+        console.log("error in update profile",error);
         res.status(500).json({message:"Internal server error"});
     }
 };
