@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {User} from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import {Camera, Mail} from "lucide-react";
+import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 const ProfilePage = () => {
   const {authUser,isUpdatingProfile,updateProfile,fetchUser}=useAuthStore();
@@ -14,21 +15,36 @@ const ProfilePage = () => {
   {
     const file=e.target.files[0];
     if(!file) return;
-    
-    const reader=new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload=async()=>{
-      const base64Image=reader.result;
-      try {
-        await updateProfile({profilePic:base64Image});
-        setSelectedImg(base64Image)
-        toast.success("Image uploaded successfully");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset","ml_default");
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/dchuvqwjl/image/upload", {
+          method: "POST",
+          body: formData,
+      });
+
+      const data = await response.json();
+      if (!data.secure_url) {
+          console.error("Cloudinary upload failed:", data);
+          toast.error("Image upload failed");
+          return;
+      }
+
+      console.log("Uploaded Image URL:", data.secure_url);
+
+      // Send URL to the backend
+      await updateProfile({ profilePic: data.secure_url });
+
+      // Update UI
+      setSelectedImg(data.secure_url);
+      toast.success("Image uploaded successfully!");
       } catch (error) {
         console.error("Error uploading image:", error);
-        toast.error("Error uploading image",error);
+        toast.error("Error uploading image");
       }
     };
-  };
   return (
     <div className='h-screen pt-20'>
       <div className='max-w-2xl mx-auto p-4 py-8'>
@@ -84,7 +100,7 @@ const ProfilePage = () => {
             <div className='space-y-3 text-sm'>
               <div className='flex items-center justify-between py-2 border-b border-zinc-700'>
                 <span>Member Since</span>
-                <span>{new Date(authUser?.createAt).toLocaleDateString()}</span>
+                <span>{authUser?.createAt? format(new Date(authUser.createAt),"MMMM dd,yyyy"):"N/A"}</span>
               </div>
               <div className='flex items-center justify-between py-2'>
                 <span>Account Status</span>
