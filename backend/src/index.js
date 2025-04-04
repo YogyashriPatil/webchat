@@ -7,6 +7,8 @@ import { connectDB } from "./lib/db.js";
 import messageRoutes from "./routes/message.route.js";
 import {app,server} from "./lib/sockets.js"
 import cors from "cors";
+import path from "path";
+
 dotenv.config();
 const __dirname = path.resolve();
 
