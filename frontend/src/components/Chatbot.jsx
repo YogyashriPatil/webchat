@@ -26,6 +26,24 @@ const Chatbot = () => {
         replyText = "Why don’t skeletons fight each other? Because they don’t have the guts. 😂";
       } else if (lowerInput.includes("time")) {
         replyText = `The current time is ${new Date().toLocaleTimeString()}`;
+      }else if (lowerInput.includes("how to send a message")) {
+        replyText = "To send a message, just select a user from the sidebar, type your message, and press Enter.";
+      } else if (lowerInput.includes("create group")) {
+        replyText = "Group chat feature is coming soon! Stay tuned 😉";
+      } else if (lowerInput.includes("features")) {
+        replyText = "This app lets you: 👥 chat 1-on-1, 📝 view message history, 🔔 get real-time updates, and 🤖 chat with me!";
+      } else if (lowerInput.includes("is this real time")) {
+        replyText = "Yes! All messages are sent and received in real-time using WebSockets.";
+      } else if (lowerInput.includes("how to start chat")) {
+        replyText = "Click on a user in the sidebar to start chatting with them.";
+      } else if (lowerInput.includes("profile") || lowerInput.includes("account")) {
+        replyText = "You can view and edit your profile from the top-right menu in the sidebar.";
+      } else if (lowerInput.includes("logout")) {
+        replyText = "To log out, click the logout button in the sidebar or top-right corner.";
+      } else if (lowerInput.includes("support")) {
+        replyText = "For support, email us at support@yourapp.com or reach out through the contact form.";
+      } else if (lowerInput.includes("bye")) {
+        replyText = "Goodbye! 👋 If you need help again, I’ll be right here.";
       }
     const botReply = { sender: 'bot', text: replyText }; // Replace with actual logic
     setMessages(prev => [...prev, userMessage, botReply]);
